@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Prototipo del sitio web de Fundación Nido, Medellín.">
+<title>Fundación Nido</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: secciones a sangre completa con fotografía; contenido en columna de 1200px.
+   Color: base blanca, azul de confianza como marca y amarillo cálido para las acciones. Paletas por tono (--h marca, --ah acento). */
+:root{
+  --h:207; --s:74%; --l:33%; --ah:42; --as:96%; --al:56%;
+  --bg:hsl(var(--h) 45% 99%); --surface:#FFFFFF; --ink:hsl(var(--h) 50% 12%); --muted:hsl(var(--h) 16% 38%);
+  --line:hsl(var(--h) 30% 90%); --brand:hsl(var(--h) var(--s) var(--l)); --on-brand:#FFFFFF; --brand-soft:hsl(var(--h) 80% 95.5%);
+  --accent:hsl(var(--ah) var(--as) var(--al)); --on-accent:hsl(var(--h) 60% 11%); --demo:#FFF1BF; --on-demo:#4A3A00;
+  --deep:hsl(var(--h) 62% 13%); --on-deep:hsl(var(--h) 30% 86%);
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --text:"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r:18px; --max:1200px;
+}
+:root[data-palette="cielo"]{--h:199; --s:88%; --l:36%; --ah:24; --as:94%; --al:58%}
+:root[data-palette="esperanza"]{--h:152; --s:52%; --l:28%; --ah:46; --as:96%; --al:56%}
+:root[data-palette="ternura"]{--h:338; --s:52%; --l:38%; --ah:30; --as:94%; --al:60%}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:hsl(var(--h) 45% 7%); --surface:hsl(var(--h) 40% 11%); --ink:hsl(var(--h) 30% 93%); --muted:hsl(var(--h) 18% 70%);
+  --line:hsl(var(--h) 30% 20%); --brand:hsl(var(--h) 80% 72%); --on-brand:hsl(var(--h) 60% 9%); --brand-soft:hsl(var(--h) 45% 16%);
+  --accent:hsl(var(--ah) var(--as) 62%); --on-accent:hsl(var(--h) 60% 9%); --demo:#3A3214; --on-demo:#F6E6A6;
+  --deep:hsl(var(--h) 55% 5%); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:hsl(var(--h) 45% 7%); --surface:hsl(var(--h) 40% 11%); --ink:hsl(var(--h) 30% 93%); --muted:hsl(var(--h) 18% 70%);
+  --line:hsl(var(--h) 30% 20%); --brand:hsl(var(--h) 80% 72%); --on-brand:hsl(var(--h) 60% 9%); --brand-soft:hsl(var(--h) 45% 16%);
+  --accent:hsl(var(--ah) var(--as) 62%); --on-accent:hsl(var(--h) 60% 9%); --demo:#3A3214; --on-demo:#F6E6A6;
+  --deep:hsl(var(--h) 55% 5%); color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+body{background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--text);-webkit-font-smoothing:antialiased;transition:background .3s}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.6rem,7vw,5.6rem);font-weight:800}
+h2{font-size:clamp(2rem,4.4vw,3.4rem)}
+h3{font-size:1.3rem;letter-spacing:-.01em}
+p{margin:0}
+a{color:inherit}
+img{display:block;max-width:100%}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+.wrap{max-width:var(--max);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+section{padding-block:clamp(64px,10vw,128px)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}
+.eyebrow::before{content:"";width:22px;height:2px;background:currentColor}
+.lead{font-size:clamp(1.05rem,1.6vw,1.22rem);color:var(--muted);max-width:58ch}
+.head{display:grid;gap:16px;margin-bottom:48px;max-width:760px}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 26px;border-radius:999px;font:700 1rem var(--text);text-decoration:none;border:2px solid transparent;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease, background .18s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(0,0,0,.35)}
+.btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s}
+.btn:hover svg{transform:translateX(3px)}
+.btn-accent{background:var(--accent);color:var(--on-accent)}
+.btn-brand{background:var(--brand);color:var(--on-brand)}
+.btn-light{background:#fff;color:hsl(var(--h) 60% 14%)}
+.btn-outline{border-color:currentColor;background:transparent;color:inherit}
+.btn-sm{padding:10px 18px;font-size:.9rem}
+.link{display:inline-flex;gap:6px;align-items:center;font-weight:700;color:var(--brand);text-decoration:none;background:none;border:0;padding:0;cursor:pointer;font-size:.98rem}
+.link:hover{text-decoration:underline;text-underline-offset:4px}
+
+/* Franjas superiores */
+.demo{background:var(--demo);color:var(--on-demo);font-size:.84rem}
+.demo .wrap{padding-block:7px}
+.band{background:var(--deep);color:var(--on-deep);font-size:.9rem}
+.band .wrap{padding-block:9px;display:flex;gap:6px 20px;flex-wrap:wrap;align-items:center}
+.band a{color:#fff;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.5)}
+.band .pulse{width:8px;height:8px;border-radius:50%;background:#FF7A59;box-shadow:0 0 0 0 rgba(255,122,89,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(255,122,89,0)}100%{box-shadow:0 0 0 0 rgba(255,122,89,0)}}
+
+/* Encabezado */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;position:relative}
+.brand-mark{display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:auto}
+.brand-mark b{font:800 1.5rem/1 var(--display);letter-spacing:-.03em}
+.brand-mark small{display:block;font:600 .64rem/1.2 var(--text);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+nav ul{list-style:none;margin:0;padding:0;display:flex;gap:2px}
+nav a{display:block;padding:9px 13px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.94rem;color:var(--ink)}
+nav a:hover{background:var(--brand-soft)}
+nav a[aria-current="page"]{background:var(--brand-soft);color:var(--brand)}
+.tools{display:flex;gap:8px;align-items:center}
+.icon-btn{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.icon-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lang-btn{width:auto;padding:0 14px;border-radius:999px;font-weight:700;font-size:.85rem}
+.menu-btn{display:none}
+.panel{position:absolute;right:max(20px,env(safe-area-inset-right,0px));top:calc(100% + 8px);width:min(320px,calc(100vw - 40px));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 24px 60px -20px rgba(0,0,0,.35);padding:20px;display:grid;gap:16px;z-index:25}
+.panel h4{margin:0;font:700 .8rem var(--text);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.swatch{display:grid;gap:6px;justify-items:center;background:none;border:0;cursor:pointer;color:var(--ink);font-size:.75rem;font-weight:600}
+.swatch i{width:46px;height:46px;border-radius:50%;display:block;border:3px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.swatch[aria-pressed="true"] i{border-color:var(--ink)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px}
+.seg button{border:0;background:none;color:var(--muted);font-weight:700;font-size:.85rem;padding:8px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+@media (max-width:980px){
+  nav{display:none;position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line)}
+  nav.open{display:block}
+  nav ul{flex-direction:column;padding:8px max(20px,env(safe-area-inset-right,0px)) 18px max(20px,env(safe-area-inset-left,0px))}
+  nav a{font-size:1.1rem;padding:12px}
+  .menu-btn{display:inline-grid}
+}
+@media (max-width:560px){
+  .tools .btn-sm{display:none}
+  .brand-mark small{display:none}
+  .tools{gap:6px}
+}
+
+/* Hero fotográfico */
+.hero{position:relative;padding:0;min-height:min(86vh,780px);display:grid;align-items:end;color:#fff;overflow:hidden;isolation:isolate}
+.hero img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 50%;z-index:-2;animation:zoom 18s ease-out both}
+@keyframes zoom{from{transform:scale(1.08)}to{transform:scale(1)}}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,hsl(var(--h) 70% 10% / .86) 0%,hsl(var(--h) 70% 12% / .55) 45%,hsl(var(--h) 70% 12% / .05) 80%),linear-gradient(0deg,hsl(var(--h) 70% 8% / .6),transparent 45%)}
+.hero .wrap{width:100%;padding-block:clamp(72px,12vw,140px) clamp(48px,7vw,88px)}
+.hero-copy{max-width:720px;display:grid;gap:24px}
+.hero .eyebrow{color:#fff}
+.hero p{font-size:clamp(1.1rem,1.8vw,1.3rem);color:rgba(255,255,255,.88);max-width:54ch}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+.hero .chips{display:flex;flex-wrap:wrap;gap:10px 22px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25);font-size:.92rem;color:rgba(255,255,255,.85)}
+.hero .chips span{display:inline-flex;gap:8px;align-items:center}
+.hero .chips svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
+.photo-note{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:14px;font-size:.72rem;color:rgba(255,255,255,.7)}
+@media (max-width:700px){ .hero::after{background:linear-gradient(0deg,hsl(var(--h) 70% 8% / .9) 10%,hsl(var(--h) 70% 10% / .5) 60%,hsl(var(--h) 70% 10% / .15))} .hero{min-height:640px} }
+.hero{min-height:max(620px,calc(100vh - 150px))}
+.hero .wrap{padding-bottom:clamp(130px,14vw,180px)}
+
+/* Portada: accesos principales que se montan sobre la foto */
+.home-cards{position:relative;z-index:2;margin-top:clamp(-150px,-11vw,-100px);padding-block:0 clamp(64px,8vw,104px)}
+.cards2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:20px}
+.hc{border-radius:28px;padding:clamp(26px,3.5vw,40px);display:grid;gap:18px;align-content:start;box-shadow:0 30px 60px -30px hsl(var(--h) 60% 15% / .45)}
+.hc h2{font-size:clamp(1.7rem,3vw,2.4rem)}
+.hc-help{background:var(--surface);border:1px solid var(--line)}
+.hc-support{background:var(--brand);color:var(--on-brand)}
+.hc-support .eyebrow{color:var(--on-brand)}
+.hc-support p{opacity:.9}
+.quick{list-style:none;margin:0;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
+.quick li{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.quick .n{font:800 2rem/1 var(--display);color:var(--brand);min-width:2.4em;font-variant-numeric:tabular-nums}
+.quick b{display:block}
+.quick small{color:var(--muted);font-size:.88rem}
+.quick a{font-weight:700;color:var(--brand);text-decoration:none;white-space:nowrap}
+.go-row{display:flex;flex-wrap:wrap;gap:8px}
+.go{border:1.5px solid color-mix(in srgb,var(--on-brand) 40%,transparent);background:transparent;color:var(--on-brand);border-radius:999px;padding:9px 16px;font-weight:700;cursor:pointer}
+.go:hover{background:color-mix(in srgb,var(--on-brand) 14%,transparent)}
+@media (max-width:860px){ .cards2{grid-template-columns:1fr} }
+
+/* Páginas internas */
+.page-first{padding-top:clamp(48px,7vw,88px)}
+
+/* Necesito ayuda */
+.help{background:var(--surface)}
+.help-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(28px,5vw,64px);align-items:start}
+.choices{display:grid;gap:10px;margin-top:28px}
+.choice{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--bg);border:2px solid var(--line);color:var(--ink);border-radius:14px;padding:16px 18px;font:600 1rem var(--text);cursor:pointer;transition:border-color .15s, transform .15s}
+.choice:hover{border-color:var(--brand);transform:translateX(4px)}
+.choice[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.choice .arrow{margin-left:auto;opacity:.5}
+.choice[aria-pressed="true"] .arrow{opacity:1;color:var(--brand)}
+.answer{position:sticky;top:110px;background:var(--brand);color:var(--on-brand);border-radius:24px;padding:clamp(28px,4vw,44px);display:grid;gap:18px;min-width:0;overflow:hidden}
+.answer .label{font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.answer .num{font:800 clamp(3.6rem,9vw,6.4rem)/.9 var(--display);letter-spacing:-.04em;word-break:break-word}
+.answer .who{font-weight:700;font-size:1.15rem}
+.answer ul{margin:0;padding-left:20px;display:grid;gap:8px;opacity:.92}
+.answer .actions{display:flex;gap:10px;flex-wrap:wrap}
+.answer .btn-outline{color:var(--on-brand)}
+.pending{display:inline-block;justify-self:start;font-size:.78rem;font-weight:700;background:var(--demo);color:var(--on-demo);padding:4px 10px;border-radius:8px}
+.note{font-size:.85rem;color:var(--muted)}
+@media (max-width:860px){ .help-grid{grid-template-columns:1fr} .answer{position:static} }
+
+/* Servicios */
+.svc-hero{position:relative;border-radius:28px;overflow:hidden;margin-bottom:24px;aspect-ratio:21/8;max-width:100%}
+.svc-hero img{width:100%;height:100%;object-fit:cover}
+.svc-hero figcaption{position:absolute;left:24px;bottom:20px;right:24px;color:#fff;font:700 clamp(1.1rem,2.4vw,1.6rem)/1.2 var(--display);text-shadow:0 2px 14px rgba(0,0,0,.5);max-width:24ch}
+.services{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.svc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:28px;display:grid;gap:12px;align-content:start;text-align:left;color:var(--ink);cursor:pointer;transition:transform .2s, box-shadow .2s, border-color .2s;font:inherit}
+.svc:hover{transform:translateY(-4px);box-shadow:0 20px 40px -24px rgba(0,0,0,.4);border-color:var(--brand)}
+.svc .ico{width:52px;height:52px;border-radius:14px;background:var(--brand-soft);display:grid;place-items:center}
+.svc .ico svg{width:26px;height:26px;stroke:var(--brand);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.svc p{color:var(--muted);font-size:.97rem}
+.svc .link{margin-top:6px}
+@media (max-width:940px){ .services{grid-template-columns:repeat(2,minmax(0,1fr))} .svc-hero{aspect-ratio:16/9} }
+@media (max-width:600px){ .services{grid-template-columns:1fr} .svc-hero{aspect-ratio:4/3} }
+
+/* Ruta con foto */
+.route{background:var(--brand);color:var(--on-brand)}
+.route .eyebrow{color:var(--on-brand)}
+.route-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(32px,6vw,80px);align-items:center}
+.route-photo{border-radius:28px;overflow:hidden;aspect-ratio:4/5;max-width:100%}
+.route-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+.steps{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:0;counter-reset:s}
+.steps li{display:grid;grid-template-columns:56px 1fr;gap:4px 18px;padding:18px 0;border-top:1px solid color-mix(in srgb,var(--on-brand) 22%,transparent);counter-increment:s}
+.steps li::before{content:counter(s,decimal-leading-zero);grid-row:span 2;font:800 1.6rem/1 var(--display);opacity:.55}
+.steps b{font-size:1.1rem}
+.steps span{opacity:.85}
+@media (max-width:860px){ .route-grid{grid-template-columns:1fr} .route-photo{aspect-ratio:16/10} }
+
+/* Prevención */
+.prev{padding:0;display:grid;grid-template-columns:1fr 1fr;min-height:560px;background:var(--surface)}
+.prev .photo{position:relative;min-height:340px}
+.prev .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.prev .copy{padding:clamp(48px,7vw,96px) max(20px,env(safe-area-inset-right,0px)) clamp(48px,7vw,96px) clamp(24px,5vw,72px);display:grid;gap:20px;align-content:center;max-width:640px}
+@media (max-width:860px){ .prev{grid-template-columns:1fr} .prev .copy{padding-left:max(20px,env(safe-area-inset-left,0px))} }
+
+/* Equipo */
+.team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.person{background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:grid;text-align:left;padding:0;color:var(--ink);cursor:pointer;font:inherit;transition:transform .2s, box-shadow .2s}
+.person:hover{transform:translateY(-4px);box-shadow:0 22px 44px -26px rgba(0,0,0,.45)}
+.person .ph{position:relative;aspect-ratio:4/5;background:var(--brand-soft);overflow:hidden}
+.person .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.person:hover .ph img{transform:scale(1.04)}
+.person .meta{padding:20px 22px 24px;display:grid;gap:4px}
+.person .role{color:var(--brand);font-weight:700;font-size:.92rem}
+.tag{position:absolute;top:14px;left:14px;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--demo);color:var(--on-demo);padding:5px 9px;border-radius:8px}
+.join{grid-column:1/-1;border:2px dashed var(--line);border-radius:22px;padding:28px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center}
+.join h3{flex:1 1 280px}
+.join .note{flex:2 1 320px}
+@media (max-width:900px){ .team{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .team{grid-template-columns:1fr} }
+
+/* Transparencia */
+.trust{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,80px)}
+.checklist{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.checklist li{display:flex;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);font-weight:500}
+.status{font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:999px;white-space:nowrap;align-self:center}
+.status.wip{background:var(--demo);color:var(--on-demo)}
+.status.next{background:var(--brand-soft);color:var(--brand)}
+@media (max-width:860px){ .trust{grid-template-columns:1fr} }
+
+/* Apoyar */
+.support{background:var(--surface);border-top:1px solid var(--line)}
+.support-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(32px,6vw,80px);align-items:start}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:24px;padding:clamp(22px,4vw,36px)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+.tab{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:9px 16px;font-weight:700;font-size:.9rem;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+form{display:grid;gap:16px}
+.field{display:grid;gap:6px;min-width:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:560px){ .row2{grid-template-columns:1fr} }
+label,.lbl{font-weight:700;font-size:.92rem}
+input,select,textarea{font:400 1rem var(--text);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 4px var(--brand-soft)}
+.amounts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.amt{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:12px 6px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums;font-size:.95rem}
+.amt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+@media (max-width:480px){ .amounts{grid-template-columns:repeat(2,1fr)} }
+.freq{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:4px}
+.freq button{border:0;background:none;color:var(--muted);font-weight:700;padding:10px;border-radius:9px;cursor:pointer}
+.freq button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.err{color:var(--accent);font-size:.85rem;font-weight:600;min-height:1em}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:.9rem;color:var(--muted)}
+.check input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--brand)}
+.info{display:flex;gap:10px;background:var(--demo);color:var(--on-demo);border-radius:12px;padding:12px 14px;font-size:.88rem}
+.ok{display:grid;gap:10px;justify-items:start}
+.ok .tick{width:56px;height:56px;border-radius:50%;background:var(--brand);color:var(--on-brand);display:grid;place-items:center}
+.ok .tick svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:2.6}
+@media (max-width:860px){ .support-grid{grid-template-columns:1fr} }
+
+/* Pie */
+footer{background:var(--deep);color:var(--on-deep);padding-block:64px 120px}
+footer .wrap{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:40px}
+footer h4{color:#fff;margin:0 0 12px;font:700 1rem var(--text)}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+footer a{text-decoration:none;color:var(--on-deep)}
+footer a:hover{color:#fff}
+.news{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.news input{flex:1 1 200px;background:hsl(var(--h) 50% 18%);border-color:hsl(var(--h) 40% 28%);color:#fff}
+.legal{grid-column:1/-1;border-top:1px solid hsl(var(--h) 40% 22%);padding-top:24px;font-size:.85rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:820px){ footer .wrap{grid-template-columns:1fr} }
+
+/* Diálogo */
+dialog{border:0;border-radius:24px;padding:0;width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 48px);background:var(--surface);color:var(--ink);box-shadow:0 40px 80px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(6,12,10,.6);backdrop-filter:blur(4px)}
+.dlg{display:grid;gap:16px;padding:clamp(24px,4vw,40px);position:relative}
+.dlg .x{position:absolute;top:14px;right:14px}
+.dlg ul{margin:0;padding-left:20px;display:grid;gap:6px;color:var(--muted)}
+.dlg .who{display:flex;gap:18px;align-items:center}
+.dlg .who img{width:96px;height:96px;border-radius:50%;object-fit:cover;flex:none}
+
+/* Salida rápida */
+.exit{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;background:#C8341C;color:#fff;border:0;border-radius:999px;padding:14px 20px;font:800 .95rem var(--text);cursor:pointer;box-shadow:0 10px 30px -8px rgba(200,52,28,.6);display:flex;gap:10px;align-items:center}
+.exit svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.4}
+.exit kbd{font:700 .7rem var(--text);border:1px solid rgba(255,255,255,.6);border-radius:5px;padding:1px 6px}
+@media (max-width:560px){ .exit kbd{display:none} }
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,140%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-weight:600;font-size:.92rem;z-index:50;transition:transform .3s;max-width:calc(100vw - 40px)}
+.toast.show{transform:translate(-50%,0)}
+#neutral{font-family:Georgia,serif;max-width:640px;margin:40px auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));color:var(--ink)}
+#neutral h1{font:700 2rem Georgia,serif;letter-spacing:0;margin-bottom:16px}
+#neutral li{margin-bottom:8px}
+
+/* Aparición suave (visible en reposo) */
+.reveal{animation:rise .8s ease both}
+@keyframes rise{from{transform:translateY(18px)}to{transform:none}}
+</style>
+</head>
+<body>
+
+<div id="site">
+<div class="demo" role="note"><div class="wrap"><strong data-i18n="demoT">Prototipo de demostración.</strong> <span data-i18n="demoD">Las fotos son ilustrativas (escenas generadas con IA y retratos de Unsplash), los perfiles del equipo son ficticios y los formularios no envían datos.</span></div></div>
+
+<div class="band"><div class="wrap">
+  <span class="pulse" aria-hidden="true"></span>
+  <b data-i18n="bandT">¿Un niño o niña está en peligro ahora?</b>
+  <span><span data-i18n="bandCall">Llama al</span> <a href="tel:123">123</a></span>
+  <span><span data-i18n="bandIcbf">Protección ICBF</span> <a href="tel:141">141</a></span>
+  <a href="#ayuda" data-i18n="bandMore">Ver todas las rutas</a>
+</div></div>
+
+<header><div class="wrap">
+  <a class="brand-mark" href="#inicio" aria-label="Fundación Nido">
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 17c2.5 10 8.5 16 15 16s12.5-6 15-16" fill="none" stroke="var(--brand)" stroke-width="3.2" stroke-linecap="round"/><path d="M11 20c2 5.5 5.2 8.5 9 8.5s7-3 9-8.5" fill="none" stroke="var(--brand)" stroke-width="3.2" stroke-linecap="round"/><circle cx="20" cy="14.5" r="4.4" fill="var(--accent)"/></svg>
+    <span><b>Nido</b><small data-i18n="brandSub">Fundación · Medellín</small></span>
+  </a>
+  <nav id="nav" aria-label="Principal"><ul>
+    <li><a href="#ayuda" data-i18n="navHelp">Necesito ayuda</a></li>
+    <li><a href="#servicios" data-i18n="navWork">Qué hacemos</a></li>
+    <li><a href="#prevencion" data-i18n="navPrev">Prevención</a></li>
+    <li><a href="#equipo" data-i18n="navTeam">Equipo</a></li>
+    <li><a href="#transparencia" data-i18n="navTrust">Transparencia</a></li>
+  </ul></nav>
+  <div class="tools">
+    <button class="icon-btn" id="themeBtn" aria-expanded="false" aria-controls="themePanel" title="Colores y modo">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.4" fill="currentColor"/><circle cx="12" cy="7.5" r="1.4" fill="currentColor"/><circle cx="16" cy="10" r="1.4" fill="currentColor"/><path d="M12 21a3 3 0 0 1 0-6h2"/></svg>
+    </button>
+    <button class="icon-btn lang-btn" id="langBtn" aria-label="Cambiar idioma">EN</button>
+    <a class="btn btn-accent btn-sm" href="#apoyar" data-i18n="navSupport">Apoyar</a>
+    <button class="icon-btn menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav" aria-label="Menú">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <div class="panel" id="themePanel" hidden>
+    <h4 data-i18n="pColor">Color de la plantilla</h4>
+    <div class="swatches" id="swatches"></div>
+    <h4 data-i18n="pMode">Modo</h4>
+    <div class="seg" id="modes">
+      <button data-mode="light" data-i18n="mLight">Claro</button>
+      <button data-mode="dark" data-i18n="mDark">Oscuro</button>
+      <button data-mode="auto" data-i18n="mAuto">Auto</button>
+    </div>
+  </div>
+</div></header>
+
+<main id="main">
+  <section class="hero" id="inicio" data-view="inicio" aria-labelledby="hero-h">
+    <img class="bg" src="hero.jpg" alt="" fetchpriority="high">
+    <div class="wrap">
+      <div class="hero-copy reveal">
+        <span class="eyebrow" data-i18n="heroEye">Fundación en Medellín</span>
+        <h1 id="hero-h" data-i18n="heroH">Aquí creces seguro.</h1>
+        <p data-i18n="heroP">Acompañamos a niñas, niños y adolescentes afectados por violencia sexual, y a sus familias, desde el primer momento: orientación, apoyo jurídico, salud mental y acompañamiento en salud.</p>
+        <div class="cta">
+          <a class="btn btn-accent" href="#ayuda"><span data-i18n="ctaHelp">Necesito ayuda ahora</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-light" href="#apoyar" data-i18n="ctaSupport">Quiero apoyar</a>
+        </div>
+        <div class="chips">
+          <span><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg><span data-i18n="chip1">Atención confidencial</span></span>
+          <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="chip2">Rutas oficiales 24 horas</span></span>
+          <span><svg viewBox="0 0 24 24"><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/><circle cx="12" cy="12" r="9"/></svg><span data-i18n="chip3">Español e inglés</span></span>
+        </div>
+      </div>
+    </div>
+    <span class="photo-note" data-i18n="photoNote">Imagen ilustrativa</span>
+  </section>
+
+  <section class="home-cards" data-view="inicio" aria-label="Accesos principales"><div class="wrap cards2">
+    <div class="hc hc-help">
+      <span class="eyebrow" data-i18n="hcHelpEye">¿Necesitas ayuda ahora?</span>
+      <h2 data-i18n="hcHelpH">Te mostramos a dónde acudir</h2>
+      <ul class="quick">
+        <li><span class="n">123</span><span><b data-i18n="q1b">Hay peligro en este momento</b><small data-i18n="q1s">Policía y emergencias</small></span><a href="tel:123" data-i18n="qCall1">Llamar</a></li>
+        <li><span class="n">141</span><span><b data-i18n="q2b">Proteger a un niño o niña</b><small data-i18n="q2s">ICBF · gratuita, 24 horas</small></span><a href="tel:141" data-i18n="qCall2">Llamar</a></li>
+        <li><span class="n">122</span><span><b data-i18n="q3b">Denunciar un delito sexual</b><small data-i18n="q3s">Fiscalía · opción 2</small></span><a href="tel:122" data-i18n="qCall3">Llamar</a></li>
+      </ul>
+      <div><a class="btn btn-brand" href="#ayuda"><span data-i18n="hcHelpBtn">Ver todas las rutas de ayuda</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    </div>
+    <div class="hc hc-support">
+      <span class="eyebrow" data-i18n="hcSupEye">Quiero apoyar</span>
+      <h2 data-i18n="hcSupH">Súmate a la red que protege a la niñez</h2>
+      <p data-i18n="hcSupP">Elige cómo quieres ayudar y te contamos los siguientes pasos.</p>
+      <div class="go-row">
+        <button type="button" class="go" data-go="donor" data-i18n="go1">Donar</button>
+        <button type="button" class="go" data-go="partner" data-i18n="go2">Empresa aliada</button>
+        <button type="button" class="go" data-go="volunteer" data-i18n="go3">Voluntariado</button>
+        <button type="button" class="go" data-go="school" data-i18n="go4">Taller para mi colegio</button>
+      </div>
+      <div><a class="btn btn-accent" href="#apoyar"><span data-i18n="hcSupBtn">Quiero apoyar</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    </div>
+  </div></section>
+
+  <section class="help page-first" id="ayuda" data-view="ayuda" aria-labelledby="help-h"><div class="wrap help-grid">
+    <div>
+      <span class="eyebrow" data-i18n="helpEye">Necesito ayuda</span>
+      <h2 id="help-h" style="margin-top:14px" data-i18n="helpH">¿Qué está pasando?</h2>
+      <p class="lead" style="margin-top:14px" data-i18n="helpP">Elige la situación y te mostramos a dónde acudir. Son líneas oficiales y gratuitas. No necesitas tener todo claro para llamar.</p>
+      <div class="choices" id="choices" role="group" aria-label="Situaciones"></div>
+      <p class="note" style="margin-top:16px" data-i18n="helpNote">Datos verificados con fuentes oficiales en noviembre de 2026.</p>
+    </div>
+    <div class="answer" id="answer" aria-live="polite"></div>
+  </div></section>
+
+  <section class="page-first" id="servicios" data-view="servicios" aria-labelledby="svc-h"><div class="wrap">
+    <div class="head">
+      <span class="eyebrow" data-i18n="svcEye">Qué hacemos</span>
+      <h2 id="svc-h" data-i18n="svcH">Ninguna familia debería recorrer este camino sola</h2>
+      <p class="lead" data-i18n="svcP">Seis líneas de acompañamiento que se articulan alrededor de cada niño, niña y su familia.</p>
+    </div>
+    <figure class="svc-hero" style="margin:0 0 24px">
+      <img src="sala.jpg" alt="Sala de atención con juguetes de madera, lápices de colores y sillones" loading="lazy">
+      <figcaption data-i18n="svcCap">Espacios pensados para que un niño se sienta a salvo.</figcaption>
+    </figure>
+    <div class="services" id="services"></div>
+  </div></section>
+
+  <section class="route" data-view="servicios" aria-labelledby="route-h"><div class="wrap route-grid">
+    <div class="route-photo"><img src="manos.jpg" alt="Manos de un adulto sosteniendo con cuidado las manos de un niño" loading="lazy"></div>
+    <div>
+      <span class="eyebrow" data-i18n="rEye">Cómo acompañamos</span>
+      <h2 id="route-h" style="margin-top:14px" data-i18n="rH">Del primer contacto a la recuperación</h2>
+      <ol class="steps">
+        <li><b data-i18n="r1h">Escuchamos</b><span data-i18n="r1p">Primer contacto con la familia, sin juicios y con reserva.</span></li>
+        <li><b data-i18n="r2h">Activamos la ruta</b><span data-i18n="r2p">Acompañamos la denuncia y la protección ante las entidades.</span></li>
+        <li><b data-i18n="r3h">Representamos</b><span data-i18n="r3p">Apoyo jurídico durante todo el proceso penal.</span></li>
+        <li><b data-i18n="r4h">Sanamos</b><span data-i18n="r4p">Atención en salud mental para el niño y su familia.</span></li>
+        <li><b data-i18n="r5h">Hacemos seguimiento</b><span data-i18n="r5p">Estamos presentes hasta que la familia se sienta segura.</span></li>
+      </ol>
+    </div>
+  </div></section>
+
+  <section class="prev" id="prevencion" data-view="prevencion" aria-labelledby="prev-h">
+    <div class="photo"><img src="colegio.jpg" alt="Docente dirigiendo un taller con estudiantes que levantan la mano" loading="lazy"></div>
+    <div class="copy">
+      <span class="eyebrow" data-i18n="pvEye">Prevención</span>
+      <h2 id="prev-h" data-i18n="pvH">Prevenir empieza en el aula</h2>
+      <p class="lead" data-i18n="pvP">Llevamos talleres a colegios de Medellín para que estudiantes, docentes y familias reconozcan las señales de alerta y sepan cómo actuar.</p>
+      <div><button class="btn btn-brand" type="button" id="schoolBtn"><span data-i18n="pvBtn">Solicitar un taller para mi colegio</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    </div>
+  </section>
+
+  <section class="page-first" id="equipo" data-view="equipo" aria-labelledby="team-h"><div class="wrap">
+    <div class="head">
+      <span class="eyebrow" data-i18n="tEye">Equipo</span>
+      <h2 id="team-h" data-i18n="tH">Profesionales que acompañan con cuidado</h2>
+      <p class="lead" data-i18n="tP">Perfiles ficticios para mostrar el diseño. En el sitio final aparecerá el equipo real, con autorización de cada persona.</p>
+    </div>
+    <div class="team" id="team"></div>
+  </div></section>
+
+  <section class="page-first" id="transparencia" data-view="transparencia" aria-labelledby="trust-h"><div class="wrap trust">
+    <div class="head" style="margin:0">
+      <span class="eyebrow" data-i18n="trEye">Transparencia</span>
+      <h2 id="trust-h" data-i18n="trH">Cuentas claras desde el primer día</h2>
+      <p class="lead" data-i18n="trP">Publicaremos cada documento legal y financiero a medida que exista. Este es el estado actual.</p>
+    </div>
+    <ul class="checklist">
+      <li><span data-i18n="tr1">Constitución como entidad sin ánimo de lucro</span><span class="status wip" data-i18n="wip">En proceso</span></li>
+      <li><span data-i18n="tr2">Registro en Cámara de Comercio de Medellín</span><span class="status wip" data-i18n="wip2">En proceso</span></li>
+      <li><span data-i18n="tr3">RUT y Régimen Tributario Especial (DIAN)</span><span class="status next" data-i18n="next">Siguiente</span></li>
+      <li><span data-i18n="tr4">Certificados de donación</span><span class="status next" data-i18n="next2">Siguiente</span></li>
+      <li><span data-i18n="tr5">Informe anual y estados financieros</span><span class="status next" data-i18n="next3">Siguiente</span></li>
+    </ul>
+  </div></section>
+
+  <section class="support page-first" id="apoyar" data-view="apoyar" aria-labelledby="sup-h"><div class="wrap support-grid">
+    <div class="head" style="margin:0">
+      <span class="eyebrow" data-i18n="suEye">Apoyar</span>
+      <h2 id="sup-h" data-i18n="suH">Súmate desde hoy</h2>
+      <p class="lead" data-i18n="suP">Estamos completando nuestra constitución legal. Registra tu intención de apoyo y te escribimos en cuanto puedas donar, aliarte o ser voluntario.</p>
+    </div>
+    <div class="card">
+      <div class="tabs" role="tablist" id="tabs">
+        <button class="tab" role="tab" data-role="donor" data-i18n="tb1">Donar</button>
+        <button class="tab" role="tab" data-role="partner" data-i18n="tb2">Empresa aliada</button>
+        <button class="tab" role="tab" data-role="volunteer" data-i18n="tb3">Voluntariado</button>
+        <button class="tab" role="tab" data-role="school" data-i18n="tb4">Colegio</button>
+      </div>
+      <form id="form" novalidate>
+        <div id="donorBox" class="field" style="gap:14px">
+          <div class="freq" id="freq"><button type="button" data-f="once" data-i18n="fOnce">Una vez</button><button type="button" data-f="monthly" data-i18n="fMonthly">Mensual</button></div>
+          <span class="lbl" data-i18n="fAmt">Monto (COP)</span>
+          <div class="amounts" id="amounts">
+            <button type="button" class="amt" data-v="50000">$50.000</button>
+            <button type="button" class="amt" data-v="100000">$100.000</button>
+            <button type="button" class="amt" data-v="200000">$200.000</button>
+            <button type="button" class="amt" data-v="other" data-i18n="fOther">Otro</button>
+          </div>
+          <div class="field" id="otherBox" hidden><label for="f-other" data-i18n="fOtherL">Otro monto (COP)</label><input id="f-other" inputmode="numeric" placeholder="$ 30.000"><span class="err" id="e-other"></span></div>
+          <div class="info" data-i18n="fInfo">Aún no recibimos pagos. Guardaremos tu intención y te avisaremos cuando la pasarela esté activa.</div>
+        </div>
+        <div class="field" id="orgBox" hidden><label for="f-org" id="orgLabel" data-i18n="fOrg">Empresa o colegio</label><input id="f-org" autocomplete="organization"><span class="err" id="e-org"></span></div>
+        <div class="row2">
+          <div class="field"><label for="f-name" data-i18n="fName">Nombre</label><input id="f-name" autocomplete="name"><span class="err" id="e-name"></span></div>
+          <div class="field"><label for="f-email" data-i18n="fEmail">Correo electrónico</label><input id="f-email" type="email" autocomplete="email"><span class="err" id="e-email"></span></div>
+        </div>
+        <div class="field"><label for="f-msg" data-i18n="fMsg">Mensaje (opcional)</label><textarea id="f-msg" rows="3"></textarea></div>
+        <label class="check" for="f-ok"><input type="checkbox" id="f-ok"> <span data-i18n="fOk">Autorizo el tratamiento de mis datos para que la fundación me contacte, según la Ley 1581 de 2012.</span></label>
+        <span class="err" id="e-ok"></span>
+        <button class="btn btn-accent" type="submit" style="justify-self:start" id="sendBtn"><span id="sendLbl"></span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+      <div class="ok" id="ok" hidden>
+        <span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>
+        <h3 id="okT"></h3>
+        <p class="note" data-i18n="okD">En este prototipo no se guarda ni se envía nada. En el sitio final tus datos se registran de forma segura y recibes un correo de confirmación.</p>
+        <button class="link" type="button" id="again" data-i18n="okAgain">Registrar otra solicitud</button>
+      </div>
+    </div>
+  </div></section>
+</main>
+
+<footer><div class="wrap">
+  <div>
+    <h4>Fundación Nido</h4>
+    <p data-i18n="ftAbout">Acompañamiento integral a niñas, niños y adolescentes afectados por violencia sexual en Medellín.</p>
+    <form class="news" id="news" novalidate>
+      <label for="n-email" class="sr" style="position:absolute;left:-9999px" data-i18n="nLbl">Correo para el boletín</label>
+      <input id="n-email" type="email" placeholder="tu@correo.com" autocomplete="email">
+      <button class="btn btn-accent btn-sm" type="submit" data-i18n="nBtn">Suscribirme</button>
+    </form>
+  </div>
+  <div><h4 data-i18n="ftNav">Navegar</h4><ul>
+    <li><a href="#ayuda" data-i18n="navHelp2">Necesito ayuda</a></li><li><a href="#servicios" data-i18n="navWork2">Qué hacemos</a></li><li><a href="#equipo" data-i18n="navTeam2">Equipo</a></li><li><a href="#apoyar" data-i18n="navSupport2">Apoyar</a></li>
+  </ul></div>
+  <div><h4 data-i18n="ftLines">Líneas oficiales</h4><ul>
+    <li><span data-i18n="l1">Emergencias</span>: <a href="tel:123">123</a></li><li>ICBF: <a href="tel:141">141</a></li><li><span data-i18n="l3">Fiscalía</span>: <a href="tel:122">122</a></li><li><span data-i18n="l4">Salud mental</span>: <a href="tel:106">106</a></li>
+  </ul></div>
+  <div class="legal"><span data-i18n="foot1">© 2026 Fundación Nido (nombre en verificación) · Medellín, Colombia</span><span data-i18n="foot2">Política de tratamiento de datos · Términos</span></div>
+</div></footer>
+</div>
+
+<div id="neutral" hidden>
+  <h1>Recetas fáciles para la semana</h1>
+  <ul><li>Arepas de queso en sartén</li><li>Sopa de verduras en 20 minutos</li><li>Arroz con pollo tradicional</li><li>Ensalada de frutas</li></ul>
+  <p class="note">Vista neutral de salida rápida (prototipo). <button id="back" class="link">Volver</button></p>
+</div>
+
+<button class="exit" id="exit" aria-label="Salida rápida: ocultar esta página"><svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg><span data-i18n="exit">Salida rápida</span><kbd>Esc</kbd></button>
+<div class="toast" id="toast" role="status"></div>
+
+<dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+
+<script>
+(function(){
+  function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+  var $ = function(id){ return document.getElementById(id); };
+  var root = document.documentElement;
+  var lang = store("nido-lang") === "en" ? "en" : "es";
+
+  var EN = {
+    demoT:"Demo prototype.", demoD:"Photos are illustrative (AI-generated scenes and Unsplash portraits), team profiles are fictional and forms do not send data.",
+    bandT:"Is a child in danger right now?", bandCall:"Call", bandIcbf:"ICBF child protection", bandMore:"See every option",
+    brandSub:"Foundation · Medellín", navHelp:"Get help", navWork:"Our work", navPrev:"Prevention", navTeam:"Team", navTrust:"Transparency", navSupport:"Support us",
+    pColor:"Template color", pMode:"Mode", mLight:"Light", mDark:"Dark", mAuto:"Auto",
+    heroEye:"Foundation in Medellín, Colombia", heroH:"Here you grow up safe.",
+    heroP:"We support children and adolescents affected by sexual violence, and their families, from the very first moment: guidance, legal support, mental health care and help accessing medical care.",
+    ctaHelp:"I need help now", ctaSupport:"I want to help", chip1:"Confidential support", chip2:"Official 24-hour lines", chip3:"Spanish and English", photoNote:"Illustrative image",
+    helpEye:"Get help", helpH:"What is happening?", helpP:"Choose the situation and we will show you where to go. These are official, free lines in Colombia. You do not need to have everything figured out to call.",
+    helpNote:"Checked against official sources in November 2026.",
+    svcEye:"Our work", svcH:"No family should walk this path alone", svcP:"Six lines of support built around each child and their family.", svcCap:"Spaces designed so a child feels safe.",
+    rEye:"How we support", rH:"From first contact to recovery",
+    r1h:"We listen", r1p:"First contact with the family, without judgment and in confidence.", r2h:"We activate the route", r2p:"We support the report and protection measures with the authorities.",
+    r3h:"We represent", r3p:"Legal support throughout the criminal process.", r4h:"We heal", r4p:"Mental health care for the child and their family.", r5h:"We follow up", r5p:"We stay until the family feels safe.",
+    pvEye:"Prevention", pvH:"Prevention starts in the classroom", pvP:"We bring workshops to Medellín schools so students, teachers and families can recognize warning signs and know how to act.", pvBtn:"Request a workshop for my school",
+    tEye:"Team", tH:"Professionals who care", tP:"Fictional profiles to show the design. The final site will show the real team, with each person's consent.",
+    trEye:"Transparency", trH:"Clear accounts from day one", trP:"We will publish every legal and financial document as it becomes available. This is where we stand today.",
+    tr1:"Registration as a non-profit organization", tr2:"Registration with the Medellín Chamber of Commerce", tr3:"Tax ID and special tax regime (DIAN)", tr4:"Donation receipts", tr5:"Annual report and financial statements",
+    wip:"In progress", wip2:"In progress", next:"Next", next2:"Next", next3:"Next",
+    suEye:"Support us", suH:"Join us today", suP:"We are completing our legal registration. Register your intention to help and we will write as soon as you can donate, partner with us or volunteer.",
+    tb1:"Donate", tb2:"Corporate partner", tb3:"Volunteer", tb4:"School", fOnce:"One time", fMonthly:"Monthly", fAmt:"Amount (COP)", fOther:"Other", fOtherL:"Other amount (COP)",
+    fInfo:"We cannot take payments yet. We will save your intention and let you know when online giving opens.", fOrg:"Company or school",
+    fName:"Name", fEmail:"Email", fMsg:"Message (optional)", fOk:"I consent to the processing of my data so the foundation can contact me, under Colombian Law 1581 of 2012.",
+    okD:"In this prototype nothing is stored or sent. On the final site your details are stored securely and you receive a confirmation email.", okAgain:"Submit another request",
+    ftAbout:"Comprehensive support for children and adolescents affected by sexual violence in Medellín.", nLbl:"Email for the newsletter", nBtn:"Subscribe",
+    ftNav:"Navigate", navHelp2:"Get help", navWork2:"Our work", navTeam2:"Team", navSupport2:"Support us", ftLines:"Official lines", l1:"Emergencies", l3:"Attorney General", l4:"Mental health",
+    foot1:"© 2026 Fundación Nido (name pending verification) · Medellín, Colombia", foot2:"Data protection policy · Terms", exit:"Quick exit",
+    hcHelpEye:"Do you need help now?", hcHelpH:"We will show you where to go", q1b:"There is danger right now", q1s:"Police and emergencies", q2b:"Protect a child", q2s:"ICBF · free, 24 hours",
+    q3b:"Report a sexual crime", q3s:"Attorney General · option 2", qCall1:"Call", qCall2:"Call", qCall3:"Call", hcHelpBtn:"See every help option",
+    hcSupEye:"I want to help", hcSupH:"Join the network that protects children", hcSupP:"Choose how you want to help and we will tell you the next steps.",
+    go1:"Donate", go2:"Corporate partner", go3:"Volunteer", go4:"Workshop for my school", hcSupBtn:"I want to help"
+  };
+  var ES = {};
+  document.querySelectorAll("[data-i18n]").forEach(function(el){ ES[el.dataset.i18n] = el.innerHTML; });
+  function t(es,en){ return lang === "es" ? es : en; }
+
+  /* ---------- Paletas y modo ---------- */
+  var PALETTES = [
+    {id:"confianza", es:"Confianza", en:"Trust", c:"hsl(207 74% 33%)", a:"hsl(42 96% 56%)"},
+    {id:"cielo", es:"Cielo", en:"Sky", c:"hsl(199 88% 36%)", a:"hsl(24 94% 58%)"},
+    {id:"esperanza", es:"Esperanza", en:"Hope", c:"hsl(152 52% 28%)", a:"hsl(46 96% 56%)"},
+    {id:"ternura", es:"Ternura", en:"Care", c:"hsl(338 52% 38%)", a:"hsl(30 94% 60%)"}
+  ];
+  var palette = store("nido-palette2") || "confianza";
+  if (!PALETTES.some(function(p){ return p.id === palette; })) palette = "confianza";
+  var mode = store("nido-mode2") || "light";
+  function applyLook(){
+    if (palette === "confianza") root.removeAttribute("data-palette"); else root.setAttribute("data-palette", palette);
+    if (mode === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", mode);
+    var sw = $("swatches"); sw.innerHTML = "";
+    PALETTES.forEach(function(p){
+      var b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.id = "sw-" + p.id;
+      b.setAttribute("aria-pressed", p.id === palette);
+      b.innerHTML = '<i style="background:linear-gradient(135deg,' + p.c + ' 0 60%,' + p.a + ' 60%)"></i><span></span>';
+      b.lastChild.textContent = p[lang];
+      b.addEventListener("click", function(){ palette = p.id; store("nido-palette2", palette); applyLook(); toast(t("Color aplicado: ","Color applied: ") + p[lang]); });
+      sw.appendChild(b);
+    });
+    document.querySelectorAll("#modes button").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.mode === mode); });
+  }
+  document.querySelectorAll("#modes button").forEach(function(b){
+    b.addEventListener("click", function(){ mode = b.dataset.mode; store("nido-mode2", mode); applyLook(); });
+  });
+  var themeBtn = $("themeBtn"), panel = $("themePanel");
+  themeBtn.addEventListener("click", function(e){ e.stopPropagation(); panel.hidden = !panel.hidden; themeBtn.setAttribute("aria-expanded", !panel.hidden); });
+  document.addEventListener("click", function(e){ if (!panel.hidden && !panel.contains(e.target)) { panel.hidden = true; themeBtn.setAttribute("aria-expanded","false"); } });
+
+  /* ---------- Toast ---------- */
+  var toastTimer;
+  function toast(msg){ var el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2600); }
+
+  /* ---------- Necesito ayuda ---------- */
+  var HELP = [
+    {id:"danger", es:"Hay peligro en este momento", en:"There is danger right now", num:"123", who:{es:"Policía y emergencias", en:"Police and emergencies"},
+      pts:{es:["Llama de inmediato, desde cualquier teléfono.","Si puedes, lleva al niño o niña a un lugar seguro."], en:["Call immediately, from any phone.","If you can, take the child somewhere safe."]}},
+    {id:"protect", es:"Quiero proteger a un niño o niña", en:"I want to protect a child", num:"141", who:{es:"Línea ICBF · gratuita, 24 horas", en:"ICBF line · free, 24 hours"},
+      pts:{es:["Activa la protección del niño o niña.","Te atienden psicólogos, abogados y trabajadores sociales.","Si ocurrió en la familia, también puedes ir a la Comisaría de Familia."], en:["Activates protection for the child.","Staffed by psychologists, lawyers and social workers.","If it happened within the family, you can also go to the Family Commission."]}},
+    {id:"report", es:"Quiero denunciar un delito sexual", en:"I want to report a sexual crime", num:"122", who:{es:"Fiscalía General · opción 2", en:"Attorney General's Office · option 2"}, pending:true,
+      pts:{es:["La denuncia penal se hace ante la Fiscalía.","También puedes denunciar en línea en fiscalia.gov.co.","En Medellín, el CAIVAS atiende a víctimas de delitos sexuales."], en:["Criminal reports go to the Attorney General's Office.","You can also report online at fiscalia.gov.co.","In Medellín, CAIVAS serves victims of sexual crimes."]}},
+    {id:"crisis", es:"Estoy en crisis emocional", en:"I am in emotional crisis", num:"106", who:{es:"Línea Amiga · Alcaldía de Medellín, 24 horas", en:"Línea Amiga · Medellín mental health line, 24 hours"},
+      pts:{es:["Escucha y orientación en salud mental.","Fijo: (604) 444 44 48."], en:["Listening and mental health guidance.","Landline: (604) 444 44 48."]}},
+    {id:"online", es:"Vi contenido de abuso en internet", en:"I saw abuse content online", num:"teprotejo.org", who:{es:"Te Protejo · reporte anónimo", en:"Te Protejo · anonymous reporting"},
+      pts:{es:["No compartas ni descargues el contenido.","Repórtalo de forma anónima en teprotejo.org."], en:["Do not share or download the content.","Report it anonymously at teprotejo.org."]}}
+  ];
+  var current = "protect";
+  function renderHelp(){
+    var box = $("choices"); box.innerHTML = "";
+    HELP.forEach(function(h){
+      var b = document.createElement("button"); b.type = "button"; b.className = "choice"; b.id = "choice-" + h.id;
+      b.setAttribute("aria-pressed", h.id === current);
+      b.innerHTML = '<span></span><span class="arrow" aria-hidden="true">→</span>';
+      b.firstChild.textContent = h[lang];
+      b.addEventListener("click", function(){ current = h.id; renderHelp(); if (innerWidth < 860) $("answer").scrollIntoView({behavior:"smooth", block:"center"}); });
+      box.appendChild(b);
+    });
+    var h = HELP.filter(function(x){ return x.id === current; })[0], web = h.num.indexOf(".") > -1, a = $("answer");
+    a.innerHTML = '<span class="label"></span><div class="num"></div><div class="who"></div><ul></ul><div class="actions">' +
+      (web ? '<a class="btn btn-light" target="_blank" rel="noopener" href="https://' + h.num + '"></a>' : '<a class="btn btn-light" href="tel:' + h.num + '"></a>') +
+      '<button type="button" class="btn btn-outline" id="copyNum"></button></div>' + (h.pending ? '<span class="pending"></span>' : '');
+    a.querySelector(".label").textContent = t("Comunícate con","Contact");
+    a.querySelector(".num").textContent = h.num;
+    a.querySelector(".who").textContent = h.who[lang];
+    h.pts[lang].forEach(function(p){ var li = document.createElement("li"); li.textContent = p; a.querySelector("ul").appendChild(li); });
+    a.querySelector(".actions a").textContent = web ? t("Abrir sitio","Open site") : t("Llamar al ","Call ") + h.num;
+    $("copyNum").textContent = t("Copiar","Copy");
+    if (h.pending) a.querySelector(".pending").textContent = t("CAIVAS: dirección y teléfono en verificación","CAIVAS: address and phone being verified");
+    $("copyNum").addEventListener("click", function(){
+      navigator.clipboard.writeText(h.num).then(function(){ toast(t("Copiado: ","Copied: ") + h.num); })
+        .catch(function(){ var r = document.createRange(); r.selectNodeContents(a.querySelector(".num")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); toast(t("Selecciona y copia el número","Select and copy the number")); });
+    });
+  }
+
+  /* ---------- Servicios ---------- */
+  var ICONS = {
+    route:'<path d="M6 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 16h4a4 4 0 0 0 4-4v-1"/>',
+    legal:'<path d="M12 4v16M7 20h10M5 8h14M5 8l-2.5 6a3 3 0 0 0 5 0zM19 8l-2.5 6a3 3 0 0 0 5 0z"/>',
+    mind:'<path d="M12 20s-8-4.8-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6.2-8 11-8 11z"/>',
+    health:'<rect x="4" y="7" width="16" height="13" rx="3"/><path d="M9 7V4h6v3M12 10.5v6M9 13.5h6"/>',
+    family:'<circle cx="8.5" cy="8" r="3"/><circle cx="17" cy="9.5" r="2.3"/><path d="M3 20c0-3.6 2.4-6 5.5-6s5.5 2.4 5.5 6M14.5 20c0-2.8 1.2-4.6 2.8-4.6S21 17.2 21 20"/>',
+    school:'<path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11.5V16c3 2.5 7 2.5 10 0v-4.5"/>'
+  };
+  var SERVICES = [
+    {k:"route", es:["Orientación y rutas","Te explicamos qué hacer y te acompañamos a activar la ruta.",["Primera escucha telefónica o presencial","Acompañamiento a Fiscalía, CAIVAS, ICBF o Comisaría","Explicación clara de cada paso del proceso"]],
+      en:["Guidance and referral","We explain the next steps and go with you to activate the route.",["First conversation by phone or in person","Accompaniment to the Attorney General, CAIVAS, ICBF or Family Commission","Clear explanation of every step"]]},
+    {k:"legal", es:["Acompañamiento jurídico","Representación de la víctima en el proceso penal.",["Representación como apoderado de víctima","Seguimiento del caso y audiencias","Restablecimiento de derechos"]],
+      en:["Legal support","Representation for the child in criminal proceedings.",["Legal representation of the victim","Case follow-up and hearings","Restoration of rights"]]},
+    {k:"mind", es:["Salud mental","Psicoterapia con enfoque de trauma para niños y adolescentes.",["Terapia individual por profesionales con tarjeta profesional","Grupos de apoyo para cuidadores","Atención en crisis y remisión"]],
+      en:["Mental health","Trauma-focused therapy for children and adolescents.",["Individual therapy by licensed professionals","Support groups for caregivers","Crisis care and referral"]]},
+    {k:"health", es:["Salud física","Acompañamiento a la valoración médica y gestión ante la EPS.",["Acompañamiento a la valoración médico-legal","Gestión de citas y autorizaciones","Articulación con hospitales de Medellín"]],
+      en:["Physical health","Support during medical examinations and with health insurers.",["Accompaniment to forensic medical examination","Appointments and authorizations","Coordination with Medellín hospitals"]]},
+    {k:"family", es:["Apoyo a familias","Escuela de cuidadores y apoyo de emergencia.",["Escuela de cuidadores","Apoyo de transporte y alimentación durante el proceso","Red de apoyo entre familias"]],
+      en:["Family support","Caregiver training and emergency help.",["Caregiver training","Transport and food support during the process","Peer network between families"]]},
+    {k:"school", es:["Prevención","Talleres en colegios y formación a docentes.",["Talleres por edades para estudiantes","Formación a docentes para detectar señales","Encuentros con familias"]],
+      en:["Prevention","Workshops in schools and teacher training.",["Age-appropriate student workshops","Teacher training to spot warning signs","Sessions with families"]]}
+  ];
+  function renderServices(){
+    var g = $("services"); g.innerHTML = "";
+    SERVICES.forEach(function(s){
+      var d = s[lang], b = document.createElement("button"); b.type = "button"; b.className = "svc"; b.id = "svc-" + s.k;
+      b.innerHTML = '<span class="ico"><svg viewBox="0 0 24 24">' + ICONS[s.k] + '</svg></span><h3></h3><p></p><span class="link"></span>';
+      b.querySelector("h3").textContent = d[0]; b.querySelector("p").textContent = d[1]; b.querySelector(".link").textContent = t("Ver detalle →","See details →");
+      b.addEventListener("click", function(){
+        openDialog(function(body){
+          body.innerHTML = '<span class="eyebrow"></span><h2 style="font-size:2rem"></h2><p class="lead"></p><ul></ul><div><a class="btn btn-accent" href="#ayuda"></a></div>';
+          body.querySelector(".eyebrow").textContent = t("Línea de servicio","Service line");
+          body.querySelector("h2").textContent = d[0]; body.querySelector("p").textContent = d[1];
+          d[2].forEach(function(x){ var li = document.createElement("li"); li.textContent = x; body.querySelector("ul").appendChild(li); });
+          var a = body.querySelector("a"); a.textContent = t("Pedir orientación","Ask for guidance"); a.addEventListener("click", closeDialog);
+        });
+      });
+      g.appendChild(b);
+    });
+  }
+
+  /* ---------- Equipo ---------- */
+  var TEAM = [
+    {img:"p1.jpg", n:"Valentina Ríos", r:{es:"Directora", en:"Executive Director"},
+      bio:{es:"Trabajadora social con experiencia en protección de la niñez. Lidera la articulación con entidades públicas y aliados.", en:"Social worker experienced in child protection. Leads coordination with public agencies and partners."}},
+    {img:"p2.jpg", n:"Andrés Mejía", r:{es:"Abogado penalista", en:"Criminal lawyer"},
+      bio:{es:"Representa a víctimas en procesos por delitos sexuales y acompaña a las familias en cada audiencia.", en:"Represents victims in sexual crime proceedings and supports families at every hearing."}},
+    {img:"p3.jpg", n:"Camila Osorio", r:{es:"Psicóloga clínica", en:"Clinical psychologist"},
+      bio:{es:"Terapia con enfoque de trauma para niños y adolescentes, y grupos de apoyo para cuidadores.", en:"Trauma-focused therapy for children and adolescents, and support groups for caregivers."}},
+    {img:"p4.jpg", stock:true, n:"Julián Gaviria", r:{es:"Psicólogo de familia", en:"Family psychologist"},
+      bio:{es:"Acompaña a madres, padres y cuidadores para que sepan cómo apoyar al niño durante el proceso.", en:"Supports mothers, fathers and caregivers so they know how to help the child through the process."}},
+    {img:"p5.jpg", stock:true, n:"Mariana Zapata", r:{es:"Médica general", en:"General practitioner"},
+      bio:{es:"Orienta a las familias en la atención en salud y en la gestión ante la EPS.", en:"Guides families through medical care and health insurers."}},
+    {img:"p6.jpg", stock:true, n:"Sara Londoño", r:{es:"Coordinadora de prevención", en:"Prevention coordinator"},
+      bio:{es:"Diseña los talleres para colegios y la formación a docentes.", en:"Designs school workshops and teacher training."}}
+  ];
+  function renderTeam(){
+    var g = $("team"); g.innerHTML = "";
+    TEAM.forEach(function(m, i){
+      var b = document.createElement("button"); b.type = "button"; b.className = "person"; b.id = "person-" + i;
+      b.innerHTML = '<div class="ph"><img loading="lazy" alt=""><span class="tag"></span></div><div class="meta"><h3></h3><span class="role"></span><span class="link" style="margin-top:8px"></span></div>';
+      b.querySelector("img").src = m.img; b.querySelector("img").alt = t("Retrato de ","Portrait of ") + m.n;
+      b.querySelector(".tag").textContent = t("Perfil ficticio · foto Unsplash","Fictional profile · Unsplash photo");
+      b.querySelector("h3").textContent = m.n; b.querySelector(".role").textContent = m.r[lang]; b.querySelector(".link").textContent = t("Ver perfil →","View profile →");
+      b.addEventListener("click", function(){
+        openDialog(function(body){
+          body.innerHTML = '<div class="who"><img alt=""><div><h2 style="font-size:1.8rem"></h2><span class="role" style="color:var(--brand);font-weight:700"></span></div></div><p class="lead"></p><span class="pending"></span>';
+          body.querySelector("img").src = m.img; body.querySelector("h2").textContent = m.n; body.querySelector(".role").textContent = m.r[lang];
+          body.querySelector("p").textContent = m.bio[lang]; body.querySelector(".pending").textContent = t("Perfil ficticio para el prototipo","Fictional profile for the prototype");
+        });
+      });
+      g.appendChild(b);
+    });
+    var j = document.createElement("div"); j.className = "join";
+    j.innerHTML = '<h3></h3><p class="note"></p><button type="button" class="btn btn-brand btn-sm"></button>';
+    j.querySelector("h3").textContent = t("¿Eres profesional y quieres sumarte?","Are you a professional who wants to join?");
+    j.querySelector("p").textContent = t("Buscamos psicólogos, abogados, médicos y trabajadores sociales.","We are looking for psychologists, lawyers, doctors and social workers.");
+    j.querySelector("button").textContent = t("Postularme como voluntario","Apply as a volunteer");
+    j.querySelector("button").addEventListener("click", function(){ goSupport("volunteer"); });
+    g.appendChild(j);
+  }
+
+  /* ---------- Diálogo ---------- */
+  var dlg = $("dlg");
+  function openDialog(fill){
+    var body = $("dlgBody"); fill(body);
+    var x = document.createElement("button"); x.type = "button"; x.className = "icon-btn x"; x.setAttribute("aria-label", t("Cerrar","Close"));
+    x.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'; x.addEventListener("click", closeDialog); body.appendChild(x);
+    dlg.showModal();
+  }
+  function closeDialog(){ dlg.close(); }
+  dlg.addEventListener("click", function(e){ if (e.target === dlg) closeDialog(); });
+
+  /* ---------- Apoyar ---------- */
+  var role = "donor", freq = "once", amount = "100000";
+  var SEND = {donor:["Registrar mi intención de donar","Register my intention to donate"], partner:["Quiero ser aliado","Become a partner"], volunteer:["Postularme","Apply"], school:["Solicitar taller","Request a workshop"]};
+  var OKT = {donor:["Gracias por querer donar.","Thank you for wanting to give."], partner:["Gracias por tu interés en aliarte.","Thank you for your interest in partnering."], volunteer:["Gracias por postularte.","Thank you for applying."], school:["Recibimos la solicitud del taller.","We received your workshop request."]};
+  function renderSupport(){
+    document.querySelectorAll("#tabs .tab").forEach(function(b){ b.setAttribute("aria-selected", b.dataset.role === role); });
+    $("donorBox").hidden = role !== "donor";
+    $("orgBox").hidden = !(role === "partner" || role === "school");
+    $("orgLabel").textContent = role === "school" ? t("Nombre del colegio","School name") : t("Empresa","Company");
+    document.querySelectorAll("#freq button").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.f === freq); });
+    document.querySelectorAll("#amounts .amt").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.v === amount); });
+    $("otherBox").hidden = amount !== "other";
+    $("sendLbl").textContent = t(SEND[role][0], SEND[role][1]);
+  }
+  document.querySelectorAll("#tabs .tab").forEach(function(b){ b.addEventListener("click", function(){ role = b.dataset.role; clearErrors(); renderSupport(); }); });
+  document.querySelectorAll("#freq button").forEach(function(b){ b.addEventListener("click", function(){ freq = b.dataset.f; renderSupport(); }); });
+  document.querySelectorAll("#amounts .amt").forEach(function(b){ b.addEventListener("click", function(){ amount = b.dataset.v; renderSupport(); if (amount === "other") $("f-other").focus(); }); });
+  function goSupport(r){ role = r; $("form").hidden = false; $("ok").hidden = true; renderSupport(); if (location.hash !== "#apoyar") location.hash = "apoyar"; else route(); setTimeout(function(){ $(r === "partner" || r === "school" ? "f-org" : "f-name").focus({preventScroll:true}); }, 300); }
+  $("schoolBtn").addEventListener("click", function(){ goSupport("school"); });
+  document.querySelectorAll("[data-go]").forEach(function(b){ b.addEventListener("click", function(){ goSupport(b.dataset.go); }); });
+  function clearErrors(){ ["e-name","e-email","e-ok","e-org","e-other"].forEach(function(id){ $(id).textContent = ""; }); }
+  function err(id, es, en){ $(id).textContent = t(es,en); return false; }
+  $("form").addEventListener("submit", function(e){
+    e.preventDefault(); clearErrors(); var ok = true;
+    if ($("f-name").value.trim().length < 2) ok = err("e-name","Escribe tu nombre.","Enter your name.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($("f-email").value.trim())) ok = err("e-email","Escribe un correo válido, por ejemplo nombre@correo.com.","Enter a valid email, e.g. name@email.com.");
+    if ((role === "partner" || role === "school") && $("f-org").value.trim().length < 2) ok = err("e-org", role === "school" ? "Escribe el nombre del colegio." : "Escribe el nombre de la empresa.", role === "school" ? "Enter the school name." : "Enter the company name.");
+    if (role === "donor" && amount === "other"){ var v = parseInt($("f-other").value.replace(/\D/g,""),10); if (!v || v < 10000) ok = err("e-other","El monto mínimo es $10.000.","The minimum amount is COP 10,000."); }
+    if (!$("f-ok").checked) ok = err("e-ok","Necesitamos tu autorización para contactarte.","We need your consent to contact you.");
+    if (!ok) return;
+    $("okT").textContent = t(OKT[role][0], OKT[role][1]);
+    $("form").hidden = true; $("ok").hidden = false;
+  });
+  $("again").addEventListener("click", function(){ $("form").reset(); $("form").hidden = false; $("ok").hidden = true; });
+  $("f-other").addEventListener("input", function(e){ var d = e.target.value.replace(/\D/g,""); e.target.value = d ? "$ " + Number(d).toLocaleString("es-CO") : ""; });
+
+  $("news").addEventListener("submit", function(e){
+    e.preventDefault(); var v = $("n-email").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { toast(t("Escribe un correo válido para suscribirte.","Enter a valid email to subscribe.")); return; }
+    $("n-email").value = ""; toast(t("Listo. En el sitio final recibirás un correo para confirmar.","Done. On the final site you would get a confirmation email."));
+  });
+
+  /* ---------- Menú, idioma, salida rápida ---------- */
+  var menuBtn = $("menuBtn"), nav = $("nav");
+  menuBtn.addEventListener("click", function(){ var o = nav.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", o); });
+  nav.addEventListener("click", function(e){ if (e.target.tagName === "A"){ nav.classList.remove("open"); menuBtn.setAttribute("aria-expanded","false"); } });
+
+  function setLang(l){
+    lang = l; root.lang = l; store("nido-lang", l);
+    var dict = l === "en" ? EN : ES;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){ var k = el.dataset.i18n; if (dict[k] != null) el.innerHTML = dict[k]; });
+    $("langBtn").textContent = l === "es" ? "EN" : "ES";
+    renderHelp(); renderServices(); renderTeam(); renderSupport(); applyLook(); clearErrors();
+  }
+  $("langBtn").addEventListener("click", function(){ setLang(lang === "es" ? "en" : "es"); });
+
+  function quickExit(){ $("site").hidden = true; $("exit").hidden = true; $("neutral").hidden = false; if (dlg.open) dlg.close(); document.title = "Recetas fáciles"; scrollTo(0,0); }
+  $("exit").addEventListener("click", quickExit);
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !$("site").hidden && !dlg.open) quickExit(); });
+  $("back").addEventListener("click", function(){ $("site").hidden = false; $("exit").hidden = false; $("neutral").hidden = true; document.title = "Fundación Nido"; });
+
+  /* ---------- Páginas (una por pestaña) ---------- */
+  var VIEWS = ["inicio","ayuda","servicios","prevencion","equipo","transparencia","apoyar"];
+  var TITLES = {inicio:["Fundación Nido","Fundación Nido"], ayuda:["Necesito ayuda","Get help"], servicios:["Qué hacemos","Our work"], prevencion:["Prevención","Prevention"], equipo:["Equipo","Team"], transparencia:["Transparencia","Transparency"], apoyar:["Apoyar","Support us"]};
+  function route(){
+    var v = location.hash.slice(1); if (VIEWS.indexOf(v) < 0) v = "inicio";
+    document.querySelectorAll("[data-view]").forEach(function(el){ el.hidden = el.dataset.view !== v; });
+    document.querySelectorAll('nav a, footer a[href^="#"]').forEach(function(a){ if (a.getAttribute("href") === "#" + v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+    if (!$("site").hidden) document.title = v === "inicio" ? "Fundación Nido" : t(TITLES[v][0], TITLES[v][1]) + " · Fundación Nido";
+    if (dlg.open) dlg.close();
+    scrollTo(0,0);
+  }
+  addEventListener("hashchange", route);
+
+  setLang(lang);
+  route();
+})();
+</script>
+
+</body>
+</html>
